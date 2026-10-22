@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cctype>
 #include "mystring.h"
 
 
@@ -6,6 +7,19 @@ String& String::operator=(String other) {
     swap(other);
     return *this;
 }
+
+bool String::operator==(const String& other) const {
+    if (size_ != other.size_) {
+        return false;
+    }
+    for (size_t i = 0; i < size_; i++) {
+        if (data_[i] != other.data_[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 
 void String::swap(String& other) {
     std::swap(data_, other.data_);
@@ -62,19 +76,77 @@ void String::print(std::ostream& os) const{
     }
 }
 
-size_t String::find(const char* substr){
-
+size_t String::find(const char* substr) const {
+    const size_t not_found = static_cast<size_t>(-1);
+    if (substr == nullptr) {
+        return not_found;
+    }
     size_t substr_len = 0;
-    while(substr[substr_len]!='\0'){
+    while (substr[substr_len] != '\0') {
         substr_len++;
     }
-    if(substr_len == 0){
+    if (substr_len == 0) {
         return 0;
     }
-    if(substr_len >size_){
-        return;
+    if (substr_len > size_) {
+        return not_found;
     }
-    for(size_t i = 0; i < size_; i++){
-        
+    for (size_t i = 0; i <= size_ - substr_len; i++) {
+        size_t k = 0;
+        while (k < substr_len && data_[i + k] == substr[k]) {
+            k++;
+        }
+        if (k == substr_len) {
+            return i;
+        }
+    }
+    return not_found;
+}
+
+void String::word_histogram(String* words, size_t* counts, size_t& out_size) const{
+    out_size = 0;
+    String word;
+    for(size_t i = 0; i<size_; i++){
+        char c = data_[i];
+        if(std::isalnum(static_cast<unsigned char>(c)) != 0){
+            word.push_back(c);
+        }
+        else{
+            if (word.size() >0){
+                bool found =false;
+                for(size_t j = 0; j<out_size; j++){
+                    if(word==words[j]){
+                        counts[j]++;
+                        found =true;
+                        break;
+                    }
+                    
+                }
+                if(found == 0)
+                { 
+                        words[out_size] = word;
+                        counts[out_size] = 1;
+                        out_size++;
+                }
+                word = String();
+            }
+            
+        }
+    }
+     if (word.size() >0){
+        bool found =false;
+        for(size_t j = 0; j<out_size; j++){
+            if(word==words[j]){
+                counts[j]++;
+                found =true;
+                break;
+            }
+        }
+        if(found == 0)
+        { 
+                words[out_size] = word;
+                counts[out_size] = 1;
+                out_size++;
+        }
     }
 }

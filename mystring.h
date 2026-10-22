@@ -13,11 +13,13 @@ public:
     size_t size() const;
     const char* data() const;
     String& operator=(String other);
+    bool operator==(const String& other) const;
     void push_back(char c);
     void append(const char* str);
     void swap(String& other);
-    void String::print(std::ostream& os) const;
-    size_t String::find(const char* str);
+    void print(std::ostream& os) const;
+    size_t find(const char* substr) const;
+    void word_histogram(String* words, size_t* counts, size_t& out_size) const;
 
 private:
     char* data_;
